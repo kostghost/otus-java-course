@@ -10,15 +10,9 @@
         <version>2019-09-SNAPSHOT</version>
     </parent>
 
-    <artifactId>HW01-maven</artifactId>
-    <name>HW01-maven</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-    </dependencies>
+    <artifactId>HW02-diy-arraylist</artifactId>
+    <name>HW02-diy-arraylist</name>
 
     <packaging>jar</packaging>
 
@@ -35,7 +29,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>ru.otus.hw01.HelloOtus</mainClass>
+                            <mainClass>ru.otus.hw02.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
