@@ -32,7 +32,7 @@ public class DiyArrayList<T> implements List<T> {
 
     private void grow() {
         int oldCapacity = elements.length;
-        int newCapacity = oldCapacity + (oldCapacity / 2);
+        int newCapacity = (int)(oldCapacity * 1.5);
         if (newCapacity < MIN_CAPACITY) {
             newCapacity = MIN_CAPACITY;
         }

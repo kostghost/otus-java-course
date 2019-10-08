@@ -4,7 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-
     <parent>
         <groupId>ru.otus</groupId>
         <artifactId>otus-java-homeworks-kvloginov</artifactId>
@@ -14,15 +13,6 @@
 
     <artifactId>HW02-diy-arraylist</artifactId>
     <name>HW02-diy-arraylist</name>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>RELEASE</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
     <packaging>jar</packaging>
 
@@ -55,6 +45,4 @@
             </plugin>
         </plugins>
     </build>
-
-
 </project>

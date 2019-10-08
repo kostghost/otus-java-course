@@ -4,13 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-
     <parent>
         <groupId>ru.otus</groupId>
         <artifactId>otus-java-homeworks-kvloginov</artifactId>
         <version>2019-09-SNAPSHOT</version>
     </parent>
-
 
     <artifactId>HW01-maven</artifactId>
     <name>HW01-maven</name>
@@ -53,6 +51,4 @@
             </plugin>
         </plugins>
     </build>
-
-
 </project>
