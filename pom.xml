@@ -26,6 +26,7 @@
     <modules>
         <module>HW01-maven</module>
         <module>HW02-diy-arraylist</module>
+        <module>HW03-gc</module>
     </modules>
 
     <properties>
