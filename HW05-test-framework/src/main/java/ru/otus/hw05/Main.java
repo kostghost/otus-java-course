@@ -8,6 +8,6 @@ public class Main {
     public static void main(String[] args) {
         String testsPath = SimpleTest.class.getName();
 
-        TestFramework.startTests(testsPath);
+        TestFramework.runTests(testsPath);
     }
 }

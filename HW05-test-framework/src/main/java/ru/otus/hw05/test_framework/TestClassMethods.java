@@ -19,11 +19,11 @@ class TestClassMethods {
     private final List<Method> afterAllMethods;
 
     public <T extends Annotation> TestClassMethods(Class clazz) {
-       this.testMethods = getMethodsWithAnnotation(clazz, Test.class);
-       this.beforeMethods = getMethodsWithAnnotation(clazz, Before.class);
-       this.afterMethods = getMethodsWithAnnotation(clazz, After.class);
-       this.beforeAllMethods = getMethodsWithAnnotation(clazz, BeforeAll.class);
-       this.afterAllMethods = getMethodsWithAnnotation(clazz, AfterAll.class);
+        this.testMethods = getMethodsWithAnnotation(clazz, Test.class);
+        this.beforeMethods = getMethodsWithAnnotation(clazz, Before.class);
+        this.afterMethods = getMethodsWithAnnotation(clazz, After.class);
+        this.beforeAllMethods = getMethodsWithAnnotation(clazz, BeforeAll.class);
+        this.afterAllMethods = getMethodsWithAnnotation(clazz, AfterAll.class);
     }
 
     public List<Method> getTestMethods() {
