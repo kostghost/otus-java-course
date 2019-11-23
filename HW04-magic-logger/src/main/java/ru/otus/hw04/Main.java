@@ -6,13 +6,16 @@ import ru.otus.hw04.proxy.IoC;
 
 public class Main {
     public static void main(String[] args) {
-        var ioc = new IoC();
+        IoC ioc = new IoC();
         IntCalculator calculator = (IntCalculator) ioc.createInstance(IntCalculatorImpl.class);
 
         int sum = calculator.sum(10, 5);
         System.out.println("sum: " + sum);
+        calculator.mult(2, 3);
+        calculator.mult(10, 1, -1);
+        calculator.sum(10, 20, 30);
+        calculator.sum(20, 30, 40);
+        calculator.sum(10, 30);
 
-        int mult = calculator.mult(2, 3);
-        System.out.println("mult: " + mult);
     }
 }
