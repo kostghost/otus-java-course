@@ -8,8 +8,8 @@ import ru.otus.hw05.test_framework.annotations.Test;
 
 public class SimpleTest {
 
-    public static int staticCounter = 0;
-    public int instanceCounter = 0;
+    private static int staticCounter = 0;
+    private int instanceCounter = 0;
 
     @BeforeAll
     public static void setupClass() {
@@ -29,10 +29,19 @@ public class SimpleTest {
     }
 
     @Test
-    public void testMult() {
+    public void testMult() throws InterruptedException {
         System.out.println("TestMult");
         addCounts();
         printCounts();
+        Thread.sleep(100);
+    }
+
+    @Test
+    public void testSumThereIsNoException() {
+        System.out.println("testSumThereIsNoException");
+        addCounts();
+        printCounts();
+        throw new RuntimeException("Oups");
     }
 
     @After

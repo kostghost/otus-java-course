@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import ru.otus.hw05.test_framework.statistics.TestStatistics;
 
 public class TestFramework {
     public static void runTests(String classPath) {
@@ -18,19 +19,36 @@ public class TestFramework {
 
             runMethods(null, testClassMethods.getBeforeAllMethods());
 
-            for (Method testMethod : testClassMethods.getTestMethods()) {
+            TestStatistics statistics = new TestStatistics();
 
+            for (Method testMethod : testClassMethods.getTestMethods()) {
                 Object instance = constructor.newInstance();
 
+                // считаю, что если exception произошел в before/after
+                // то это ошибка и тестирование должно прерваться
                 runMethods(instance, testClassMethods.getBeforeMethods());
-                testMethod.invoke(instance);
+                runPreparedTestAndWriteStatistic(testMethod, instance, statistics);
                 runMethods(instance, testClassMethods.getAfterMethods());
             }
 
             runMethods(null, testClassMethods.getAfterAllMethods());
-
+            System.out.println(statistics.getFormattedStatistic());
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    private static void runPreparedTestAndWriteStatistic(Method testMethod, Object instance,
+                                                         TestStatistics statistics) {
+        long runTimeMs = System.currentTimeMillis();
+        try {
+            testMethod.invoke(instance);
+            long durationMs = System.currentTimeMillis() - runTimeMs;
+            statistics.addPassed(testMethod.getName(), durationMs);
+
+        } catch (Exception ex) {
+            long durationMs = System.currentTimeMillis() - runTimeMs;
+            statistics.addFailed(testMethod.getName(), durationMs, ex);
         }
     }
 
