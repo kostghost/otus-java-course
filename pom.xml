@@ -27,6 +27,7 @@
         <module>HW01-maven</module>
         <module>HW02-diy-arraylist</module>
         <module>HW03-gc</module>
+        <module>HW04-magic-logger</module>
         <module>HW-05-test-framework</module>
     </modules>
 
