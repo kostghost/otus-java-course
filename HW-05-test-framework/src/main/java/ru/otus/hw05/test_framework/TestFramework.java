@@ -12,11 +12,13 @@ import ru.otus.hw05.test_framework.statistics.TestStatistics;
 
 public class TestFramework {
     public static void runTests(String classPath) {
+        TestClassMethods testClassMethods = null;
+
         try {
             Class<?> clazz = Class.forName(classPath);
             Constructor<?> constructor = clazz.getConstructor();
 
-            TestClassMethods testClassMethods = new TestClassMethods(clazz);
+            testClassMethods = new TestClassMethods(clazz);
             simpleChecks(testClassMethods);
 
             runMethods(null, testClassMethods.getBeforeAllMethods());
@@ -32,11 +34,13 @@ public class TestFramework {
                 runPreparedTestAndWriteStatistic(testMethod, instance, statistics);
                 runMethods(instance, testClassMethods.getAfterMethods());
             }
-
-            runMethods(null, testClassMethods.getAfterAllMethods());
             System.out.println(statistics.getFormattedStatistic());
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
+        } finally {
+            if (testClassMethods != null) {
+                runMethods(null, testClassMethods.getAfterAllMethods());
+            }
         }
     }
 
