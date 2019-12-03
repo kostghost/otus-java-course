@@ -1,0 +1,54 @@
+package ru.otus.hw06.banknote;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import ru.otus.hw06.atm.NoMoneyException;
+
+// Представляет из себя пачку денег
+public class Bundle {
+    private Map<Banknote, Integer> bundle;
+
+    public Bundle() {
+        bundle = new HashMap<>();
+    }
+
+    public Bundle add(Banknote banknote, int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        if (bundle.containsKey(banknote)) {
+            var oldCount = bundle.get(banknote);
+            bundle.replace(banknote, oldCount + count);
+            return this;
+        }
+        bundle.put(banknote, count);
+        return this;
+    }
+
+    public void withdraw(Banknote banknote, int count) {
+        var countExists = bundle.getOrDefault(banknote, 0);
+        if (countExists < count) {
+            throw new NoMoneyException();
+        }
+        bundle.replace(banknote, countExists - count);
+    }
+
+    public Integer getCountByBanknote(Banknote banknote) {
+        return bundle.getOrDefault(banknote, 0);
+    }
+
+    public Set<Banknote> getBanknotes() {
+        return bundle.keySet();
+    }
+
+    public int sum() {
+        int sum = 0;
+        for (var currency : bundle.keySet()) {
+            sum += currency.getValue() * bundle.get(currency);
+        }
+        return sum;
+    }
+}

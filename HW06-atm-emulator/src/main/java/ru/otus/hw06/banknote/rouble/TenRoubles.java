@@ -1,4 +1,4 @@
-package ru.otus.hw06.currency.rouble;
+package ru.otus.hw06.banknote.rouble;
 
 public class TenRoubles extends Rouble {
     public TenRoubles() {

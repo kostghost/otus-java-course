@@ -1,13 +1,12 @@
-package ru.otus.hw06.currency;
-
+package ru.otus.hw06.banknote;
 
 import java.util.Objects;
 
-public abstract class Currency implements Comparable<Currency> {
+public abstract class Banknote implements Comparable<Banknote> {
     // Счтаем, что банкомат работает только с целыми числами
     private int value;
 
-    protected Currency(int value) {
+    protected Banknote(int value) {
         this.value = value;
     }
 
@@ -15,17 +14,10 @@ public abstract class Currency implements Comparable<Currency> {
         return value;
     }
 
-    public String getName() {
-        return "";
-    }
-
-    public String getShortName() {
-        return "";
-    }
-
-    public int compareTo(Currency o) {
+    @Override
+    public int compareTo(Banknote o) {
         var otherValue = o.getValue();
-        return Integer.compare(this.getValue(), otherValue);
+        return -Integer.compare(this.getValue(), otherValue);
     }
 
     @Override
@@ -36,12 +28,16 @@ public abstract class Currency implements Comparable<Currency> {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Currency currency = (Currency) o;
-        return value == currency.value;
+        Banknote banknote = (Banknote) o;
+        return value == banknote.value;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(value);
+    }
+
+    public Currency getCurrency() {
+        return Currency.NOT_SPECIFIED;
     }
 }

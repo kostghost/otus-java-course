@@ -1,68 +1,76 @@
 package ru.otus.hw06.atm;
 
 
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import ru.otus.hw06.atm.cell.Cell;
-import ru.otus.hw06.currency.Bundle;
-import ru.otus.hw06.currency.Currency;
+import ru.otus.hw06.banknote.Banknote;
+import ru.otus.hw06.banknote.Bundle;
+import ru.otus.hw06.banknote.Currency;
 
 public class AtmEmulator {
-    // sorted DESC
-    private SortedSet<Cell> cells;
+    private Map<Banknote, Cell> cells;
 
     public AtmEmulator(Bundle bundle) {
-        cells = new TreeSet<>();
+        cells = new HashMap<>();
         addMoney(bundle);
     }
 
     public int getBalance() {
-        return cells.stream().map(Cell::getSum).reduce(0, Integer::sum);
+        return cells.values().stream().map(Cell::getSum).reduce(0, Integer::sum);
     }
 
     public String getDetailedBalance() {
-        return cells.stream()
-                .map(x -> x.getCurrency().getValue() +
+        return cells.keySet().stream()
+                .sorted()
+                .map(x -> x.getValue() +
                         x.getCurrency().getShortName() + " " +
-                        ": " + x.getCount() + "шт. " +
-                        "Сумма:" + x.getSum()
+                        ": " + cells.get(x).getCount() + "шт. " +
+                        "Сумма:" + cells.get(x).getSum()
                 )
                 .collect(Collectors.joining("\n"));
     }
 
-    // TODO ух, может все-таки сделать какую-то обертку над cells?
     public void addMoney(Bundle bundle) {
-        for (Currency currency : bundle.getCurrencies()) {
-            if (cells.stream().anyMatch(x -> x.getCurrency().equals(currency))) {
-                cells.stream()
-                        .filter(x -> x.getCurrency().equals(currency))
-                        .forEach(x -> x.insertBills(bundle.getCountByCurrency(currency)));
+        for (Banknote banknote : bundle.getBanknotes()) {
+            if (cells.keySet().contains(banknote)) {
+                cells.get(banknote).insertBills(bundle.getCountByBanknote(banknote));
             } else {
-                cells.add(new Cell(currency, bundle.getCountByCurrency(currency)));
+                cells.put(banknote, new Cell(banknote, bundle.getCountByBanknote(banknote)));
             }
         }
     }
 
-    public void withdrawMoney(int value) {
-        Bundle bundle = getBundleToWithdraw(value);
+    public void withdrawMoney(int value, Currency currency) {
+        Bundle bundle;
+        try {
+            bundle = getBundleToWithdraw(value, currency);
+        } catch (NoMoneyException ex) {
+            System.out.println("К сожалению, невозможно выдать " + value + " " + currency.getShortName());
+            return;
+        }
 
-        // тут уже упали в случае, если не смогли собрать bundle
-
-        for (Cell cell : cells) {
-            cell.withdrawBills(bundle.getCountByCurrency(cell.getCurrency()));
+        for (Cell cell : cells.values()) {
+            cell.withdrawBills(bundle.getCountByBanknote(cell.getBanknote()));
         }
     }
 
-    private Bundle getBundleToWithdraw(int value) {
+    private Bundle getBundleToWithdraw(int value, Currency currency) {
         Bundle bundle = new Bundle();
 
-        for (Cell cell : cells) {
-            int countOfBillsWeWant = (value - bundle.sum()) / cell.getCurrency().getValue();
-            int countOfBillsWeCanWithdraw = Math.min(countOfBillsWeWant, cell.getCount());
+        List<Banknote> descSortedUsedBanknotesOfCurrency = cells.keySet().stream()
+                .filter(x -> x.getCurrency() == currency)
+                .sorted()
+                .collect(Collectors.toList());
 
-            bundle.add(cell.getCurrency(), countOfBillsWeCanWithdraw);
+        for (Banknote banknote : descSortedUsedBanknotesOfCurrency) {
+            int countOfBillsWeWant = (value - bundle.sum()) / banknote.getValue();
+            int countOfBillsWeCanWithdraw = Math.min(countOfBillsWeWant, cells.get(banknote).getCount());
+
+            bundle.add(banknote, countOfBillsWeCanWithdraw);
 
             if (bundle.sum() == value) {
                 return bundle;

@@ -1,13 +1,13 @@
 package ru.otus.hw06.atm;
 
 import org.junit.jupiter.api.Test;
-import ru.otus.hw06.currency.Bundle;
-import ru.otus.hw06.currency.rouble.FiveHundredRoubles;
-import ru.otus.hw06.currency.rouble.OneHundredRoubles;
-import ru.otus.hw06.currency.rouble.TenRoubles;
+import ru.otus.hw06.banknote.Bundle;
+import ru.otus.hw06.banknote.Currency;
+import ru.otus.hw06.banknote.rouble.FiveHundredRoubles;
+import ru.otus.hw06.banknote.rouble.OneHundredRoubles;
+import ru.otus.hw06.banknote.rouble.TenRoubles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class AtmEmulatorTest {
 
@@ -42,7 +42,7 @@ class AtmEmulatorTest {
         AtmEmulator emulator = generateEmulator();
         assertEquals(2850, emulator.getBalance());
 
-        emulator.withdrawMoney(2710);
+        emulator.withdrawMoney(2710, Currency.ROUBLE);
         assertEquals(140, emulator.getBalance());
     }
 
@@ -51,7 +51,8 @@ class AtmEmulatorTest {
         AtmEmulator emulator = generateEmulator();
         assertEquals(2850, emulator.getBalance());
 
-        assertThrows(NoMoneyException.class, () -> emulator.withdrawMoney(2790));
+        emulator.withdrawMoney(2790, Currency.ROUBLE);
+        assertEquals(2850, emulator.getBalance());
     }
 
     @Test

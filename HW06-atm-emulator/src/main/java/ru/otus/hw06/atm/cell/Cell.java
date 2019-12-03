@@ -1,48 +1,36 @@
 package ru.otus.hw06.atm.cell;
 
-import ru.otus.hw06.currency.Bundle;
-import ru.otus.hw06.currency.Currency;
+import ru.otus.hw06.banknote.Banknote;
+import ru.otus.hw06.banknote.Bundle;
 
 // Ячейка хранит в себе некоторое количество банкнот одного типа
-public class Cell implements Comparable {
+public class Cell {
     private Bundle bundle;
-    private Currency currency;
+    private Banknote banknote;
 
-    public Cell(Currency currency, int count) {
-        this.currency = currency;
+    public Cell(Banknote banknote, int count) {
+        this.banknote = banknote;
         this.bundle = new Bundle();
-        this.bundle.add(currency, count);
+        this.bundle.add(banknote, count);
     }
 
     public void insertBills(int count) {
-        bundle.add(currency, count);
+        bundle.add(banknote, count);
     }
 
     public void withdrawBills(int count) {
-        bundle.withdraw(currency, count);
+        bundle.withdraw(banknote, count);
     }
 
-    public Currency getCurrency() {
-        return currency;
+    public Banknote getBanknote() {
+        return banknote;
     }
 
     public int getCount() {
-        return bundle.getCountByCurrency(currency);
+        return bundle.getCountByBanknote(banknote);
     }
 
     public int getSum() {
         return bundle.sum();
     }
-
-    // небольшой хак
-    @Override
-    public int compareTo(Object o) {
-        if (o instanceof Cell) {
-            return -getCurrency().compareTo(((Cell) o).getCurrency());
-        } else {
-            throw new IllegalArgumentException("Можно сравнивать ячейки только друг с другом");
-        }
-    }
-
-
 }
