@@ -1,44 +1,14 @@
 package ru.otus.hw06.banknote;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
-// Представляет из себя пачку денег
-public class Bundle {
-    private Map<Banknote, Integer> bundle;
+public interface Bundle {
 
-    public Bundle() {
-        bundle = new HashMap<>();
-    }
+    Bundle add(Banknote banknote, int count);
 
-    public Bundle add(Banknote banknote, int count) {
-        if (count < 0) {
-            throw new IllegalArgumentException();
-        }
+    Integer getCountByBanknote(Banknote banknote);
 
-        if (bundle.containsKey(banknote)) {
-            var oldCount = bundle.get(banknote);
-            bundle.replace(banknote, oldCount + count);
-            return this;
-        }
-        bundle.put(banknote, count);
-        return this;
-    }
+    Set<Banknote> getBanknotes();
 
-    public Integer getCountByBanknote(Banknote banknote) {
-        return bundle.getOrDefault(banknote, 0);
-    }
-
-    public Set<Banknote> getBanknotes() {
-        return bundle.keySet();
-    }
-
-    public int sum() {
-        int sum = 0;
-        for (var currency : bundle.keySet()) {
-            sum += currency.getValue() * bundle.get(currency);
-        }
-        return sum;
-    }
+    int getSum();
 }

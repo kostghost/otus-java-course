@@ -7,14 +7,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import ru.otus.hw06.atm.cell.Cell;
+import ru.otus.hw06.atm.cell.CellImpl;
 import ru.otus.hw06.banknote.Banknote;
 import ru.otus.hw06.banknote.Bundle;
+import ru.otus.hw06.banknote.BundleImpl;
 import ru.otus.hw06.banknote.Currency;
 
-public class AtmEmulator {
+public class AtmEmulator implements Atm {
     private Map<Banknote, Cell> cells;
 
-    public AtmEmulator(Bundle bundle) {
+    AtmEmulator(Bundle bundle) {
         cells = new HashMap<>();
         addMoney(bundle);
     }
@@ -39,7 +41,7 @@ public class AtmEmulator {
             if (cells.keySet().contains(banknote)) {
                 cells.get(banknote).insertBills(bundle.getCountByBanknote(banknote));
             } else {
-                cells.put(banknote, new Cell(banknote, bundle.getCountByBanknote(banknote)));
+                cells.put(banknote, new CellImpl(banknote, bundle.getCountByBanknote(banknote)));
             }
         }
     }
@@ -59,7 +61,7 @@ public class AtmEmulator {
     }
 
     private Bundle getBundleToWithdraw(int value, Currency currency) {
-        Bundle bundle = new Bundle();
+        Bundle bundle = new BundleImpl();
 
         List<Banknote> descSortedUsedBanknotesOfCurrency = cells.keySet().stream()
                 .filter(x -> x.getCurrency() == currency)
@@ -67,12 +69,12 @@ public class AtmEmulator {
                 .collect(Collectors.toList());
 
         for (Banknote banknote : descSortedUsedBanknotesOfCurrency) {
-            int countOfBillsWeWant = (value - bundle.sum()) / banknote.getValue();
+            int countOfBillsWeWant = (value - bundle.getSum()) / banknote.getValue();
             int countOfBillsWeCanWithdraw = Math.min(countOfBillsWeWant, cells.get(banknote).getCount());
 
             bundle.add(banknote, countOfBillsWeCanWithdraw);
 
-            if (bundle.sum() == value) {
+            if (bundle.getSum() == value) {
                 return bundle;
             }
         }

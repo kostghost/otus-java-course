@@ -1,44 +1,16 @@
 package ru.otus.hw06.atm.cell;
 
-import ru.otus.hw06.atm.NoMoneyException;
 import ru.otus.hw06.banknote.Banknote;
 
-// Ячейка хранит в себе некоторое количество банкнот одного типа
-public class Cell {
-    private final Banknote banknote;
-    private int count;
+public interface Cell {
 
-    public Cell(Banknote banknote, int count) {
-        this.banknote = banknote;
-        this.count = count;
-    }
+    void insertBills(int count);
 
-    public void insertBills(int count) {
-        if (count < 0) {
-            throw new IllegalArgumentException();
-        }
-        this.count += count;
-    }
+    void withdrawBills(int count);
 
-    public void withdrawBills(int count) {
-        if (count < 0) {
-            throw new IllegalArgumentException();
-        }
-        if (this.count < count) {
-            throw new NoMoneyException();
-        }
-        this.count -= count;
-    }
+    Banknote getBanknote();
 
-    public Banknote getBanknote() {
-        return banknote;
-    }
+    int getCount();
 
-    public int getCount() {
-        return count;
-    }
-
-    public int getSum() {
-        return count * banknote.getValue();
-    }
+    int getSum();
 }
