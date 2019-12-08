@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import ru.otus.hw06.atm.NoMoneyException;
-
 // Представляет из себя пачку денег
 public class Bundle {
     private Map<Banknote, Integer> bundle;
@@ -26,14 +24,6 @@ public class Bundle {
         }
         bundle.put(banknote, count);
         return this;
-    }
-
-    public void withdraw(Banknote banknote, int count) {
-        var countExists = bundle.getOrDefault(banknote, 0);
-        if (countExists < count) {
-            throw new NoMoneyException();
-        }
-        bundle.replace(banknote, countExists - count);
     }
 
     public Integer getCountByBanknote(Banknote banknote) {
