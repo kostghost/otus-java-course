@@ -29,6 +29,7 @@
         <module>HW03-gc</module>
         <module>HW04-magic-logger</module>
         <module>HW-05-test-framework</module>
+        <module>HW06-atm-emulator</module>
     </modules>
 
     <properties>
