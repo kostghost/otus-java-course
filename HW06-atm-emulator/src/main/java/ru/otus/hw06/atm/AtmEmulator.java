@@ -16,7 +16,7 @@ import ru.otus.hw06.banknote.Currency;
 public class AtmEmulator implements Atm {
     private Map<Banknote, Cell> cells;
 
-    AtmEmulator(Bundle bundle) {
+    public AtmEmulator(Bundle bundle) {
         cells = new HashMap<>();
         addMoney(bundle);
     }

@@ -10,6 +10,12 @@
             <version>5.5.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>ru.otus</groupId>
+            <artifactId>HW06-atm-emulator</artifactId>
+            <version>2019-09-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <parent>
@@ -18,39 +24,7 @@
         <version>2019-09-SNAPSHOT</version>
     </parent>
 
-
     <artifactId>HW07-atm-department</artifactId>
     <name>HW07-atm-department</name>
 
-    <packaging>jar</packaging>
-
-    <build>
-        <finalName>${project.name}</finalName>
-
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>ru.otus.hw07.Main</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-assembly</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>
