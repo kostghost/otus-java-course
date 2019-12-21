@@ -3,6 +3,7 @@ package ru.otus.hw07.department;
 import ru.otus.hw07.department.command.AtmDepartmentCommand;
 import ru.otus.hw07.department.command.CommandHistory;
 import ru.otus.hw07.department.gui.AtmGui;
+import ru.otus.hw07.department.holder.AtmHolder;
 
 public class AtmDepartmentClientImpl implements AtmDepartmentClient {
 
@@ -18,26 +19,24 @@ public class AtmDepartmentClientImpl implements AtmDepartmentClient {
         this.history = history;
     }
 
+    @Override
     public void executeCommand(AtmDepartmentCommand command) {
-        if (command.execute()) {
-            history.push(command);
-        }
+        command.execute();
+        history.push(command);
     }
 
-    public void undo() {
-        var command = history.pop();
-
-        if (command != null) {
-            command.rollback();
-        }
-    }
-
+    @Override
     public AtmHolder getAtmHolder() {
         return atmHolder;
     }
 
+    @Override
     public AtmGui getAtmGui() {
         return atmGui;
     }
 
+    @Override
+    public CommandHistory getHistory() {
+        return history;
+    }
 }

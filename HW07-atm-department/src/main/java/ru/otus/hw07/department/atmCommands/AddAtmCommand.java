@@ -14,14 +14,7 @@ public class AddAtmCommand extends AtmDepartmentCommand {
     }
 
     @Override
-    public void rollback() {
-
-    }
-
-    @Override
-    public boolean execute() {
+    public void execute() {
         client.getAtmHolder().addAtm(atmToAdd);
-
-        return true;
     }
 }

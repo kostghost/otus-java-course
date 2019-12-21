@@ -14,17 +14,22 @@ import ru.otus.hw06.banknote.BundleImpl;
 import ru.otus.hw06.banknote.Currency;
 
 public class AtmEmulator implements Atm {
+
+    private String id;
     private Map<Banknote, Cell> cells;
 
-    public AtmEmulator(Bundle bundle) {
+    public AtmEmulator(Bundle bundle, String id) {
         cells = new HashMap<>();
+        this.id = id;
         addMoney(bundle);
     }
 
+    @Override
     public int getBalance() {
         return cells.values().stream().map(Cell::getSum).reduce(0, Integer::sum);
     }
 
+    @Override
     public String getDetailedBalance() {
         return cells.keySet().stream()
                 .sorted()
@@ -36,6 +41,18 @@ public class AtmEmulator implements Atm {
                 .collect(Collectors.joining("\n"));
     }
 
+    @Override
+    public Bundle getBalanceAsBundle() {
+        Bundle bundle = new BundleImpl();
+
+        for (var cell : cells.values()) {
+            bundle.add(cell.getBanknote(), cell.getCount());
+        }
+
+        return bundle;
+    }
+
+    @Override
     public void addMoney(Bundle bundle) {
         for (Banknote banknote : bundle.getBanknotes()) {
             if (cells.keySet().contains(banknote)) {
@@ -46,6 +63,7 @@ public class AtmEmulator implements Atm {
         }
     }
 
+    @Override
     public void withdrawMoney(int value, Currency currency) {
         Bundle bundle;
         try {
@@ -81,4 +99,15 @@ public class AtmEmulator implements Atm {
 
         throw new NoMoneyException();
     }
+
+    @Override
+    public Object copy() {
+        return new AtmEmulator(getBalanceAsBundle(), id);
+    }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
 }

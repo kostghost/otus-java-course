@@ -4,25 +4,30 @@ import java.util.EmptyStackException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import ru.otus.hw07.department.command.AtmDepartmentCommand;
 import ru.otus.hw07.department.command.CommandHistoryImpl;
-import ru.otus.hw07.department.mocks.TestClient;
-import ru.otus.hw07.department.mocks.TestCommand;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CommandHistoryImplTest {
-    private TestCommand testCommandOne;
-    private TestCommand testCommandTwo;
-    private TestClient client;
+    @Mock
+    private AtmDepartmentCommand testCommandOne;
+    @Mock
+    private AtmDepartmentCommand testCommandTwo;
+    @Mock
+    private AtmDepartmentClient client;
+
     private CommandHistoryImpl commandHistory;
 
     @BeforeEach
     void before() {
-        client = new TestClient();
+        client = Mockito.mock(AtmDepartmentClient.class);
         commandHistory = new CommandHistoryImpl();
-        testCommandOne = new TestCommand(client);
-        testCommandTwo = new TestCommand(client);
+        testCommandOne = Mockito.mock(AtmDepartmentCommand.class);
+        testCommandTwo = Mockito.mock(AtmDepartmentCommand.class);
     }
 
     @Test

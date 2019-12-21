@@ -2,21 +2,31 @@ package ru.otus.hw07.department;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import ru.otus.hw06.atm.Atm;
-import ru.otus.hw07.department.mocks.TestAtm;
+import ru.otus.hw07.department.holder.AtmHolderImpl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AtmHolderImplTest {
-    private TestAtm atm;
-    private TestAtm atmTwo;
+    @Mock
+    private Atm atm;
+
+    @Mock
+    private Atm atmTwo;
+
     private AtmHolderImpl atmHolder;
 
     @BeforeEach
     void before() {
-        atm = new TestAtm();
-        atmTwo = new TestAtm();
+        atm = Mockito.mock(Atm.class);
+        Mockito.when(atm.getId()).thenReturn("one");
+
+        atmTwo = Mockito.mock(Atm.class);
+        Mockito.when(atmTwo.getId()).thenReturn("two");
 
         atmHolder = new AtmHolderImpl();
     }
@@ -24,7 +34,7 @@ class AtmHolderImplTest {
     @Test
     void testWork() {
         atmHolder.addAtm(atm);
-        atmHolder.addAtm(atm);
+        atmHolder.addAtm(atmTwo);
 
         Iterable<Atm> atms = atmHolder.getAtms();
         var iterator = atms.iterator();
@@ -34,9 +44,18 @@ class AtmHolderImplTest {
     }
 
     @Test
-    void testHasNotNext() {
+    void testHasNoNext() {
         Iterable<Atm> atms = atmHolder.getAtms();
 
         assertFalse(atms.iterator().hasNext());
+    }
+
+    @Test
+    void testGetAtmById() {
+        atmHolder.addAtm(atm);
+        atmHolder.addAtm(atmTwo);
+
+        assertEquals("one", atmHolder.getAtm("one").getId());
+        assertEquals("two", atmHolder.getAtm("two").getId());
     }
 }

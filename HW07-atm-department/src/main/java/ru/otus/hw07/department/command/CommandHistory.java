@@ -5,4 +5,6 @@ public interface CommandHistory {
     void push(AtmDepartmentCommand command);
 
     AtmDepartmentCommand pop();
+
+    void clear();
 }

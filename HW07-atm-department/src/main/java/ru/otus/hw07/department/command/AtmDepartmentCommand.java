@@ -10,7 +10,13 @@ public abstract class AtmDepartmentCommand {
         this.client = client;
     }
 
-    public abstract void rollback();
+    // можно было бы добавить еще метод rollback и откатывать операции покомандно.
+    // Непонятно, как это нужно реализовать с точки зрения бизнеса
+    // т.к. умеем откатывать состояния банкоматов, чего в жизни быть не может.
 
-    public abstract boolean execute();
+    public abstract void execute();
+
+    public String getCommandName() {
+        return this.getClass().getSimpleName();
+    }
 }

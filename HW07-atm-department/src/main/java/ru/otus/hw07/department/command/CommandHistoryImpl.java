@@ -19,4 +19,10 @@ public class CommandHistoryImpl implements CommandHistory {
     public AtmDepartmentCommand pop() {
         return commands.pop();
     }
+
+    @Override
+    public void clear() {
+        commands.clear();
+    }
+
 }
