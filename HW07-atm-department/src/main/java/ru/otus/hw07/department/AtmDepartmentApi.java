@@ -5,14 +5,14 @@ import ru.otus.hw06.banknote.Bundle;
 
 /**
  * Использовать AtmDepartment нужно именно через этот интерфейс
+ * TODO нужно сделать исправления, которые есть в PR
+ * https://github.com/kvloginov/2019-09-otus-java-loginov/pull/7
  */
 public interface AtmDepartmentApi {
 
     /**
      * Может создавать копии atm, поэтому действия, сделанные с atm напрямую
      * могут не повлиять на Department и наоборот
-     *
-     * @param atm
      */
     void addAtm(Atm atm);
 
