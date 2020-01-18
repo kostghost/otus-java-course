@@ -15,7 +15,7 @@ class AtmEmulatorTest {
         return new AtmEmulator(new BundleImpl()
                 .add(new FiveHundredRoubles(), 5)
                 .add(new TenRoubles(), 5)
-                .add(new OneHundredRoubles(), 3));
+                .add(new OneHundredRoubles(), 3), "atm");
     }
 
     @Test
@@ -26,7 +26,7 @@ class AtmEmulatorTest {
 
     @Test
     void balanceZero() {
-        AtmEmulator emulator = new AtmEmulator(new BundleImpl());
+        AtmEmulator emulator = new AtmEmulator(new BundleImpl(), "atm");
 
         assertEquals(0, emulator.getBalance());
     }
