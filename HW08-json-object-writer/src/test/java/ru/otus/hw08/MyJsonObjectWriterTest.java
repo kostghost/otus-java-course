@@ -1,17 +1,21 @@
 package ru.otus.hw08;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import com.google.gson.Gson;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.otus.hw08.examples.ClassWithCollections;
 import ru.otus.hw08.examples.ClassWithComplexCollections;
 import ru.otus.hw08.examples.ClassWithObject;
 import ru.otus.hw08.examples.PrimitiveClass;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MyJsonObjectWriterTest {
 
@@ -29,10 +33,9 @@ class MyJsonObjectWriterTest {
         PrimitiveClass obj = new PrimitiveClass(999, "str");
 
         String json = myJsonObjectWriter.toJson(obj);
-        System.out.println("json: " + json);
 
         PrimitiveClass obj2 = gson.fromJson(json, PrimitiveClass.class);
-        Assertions.assertEquals(obj, obj2);
+        assertEquals(obj, obj2);
     }
 
     @Test
@@ -40,10 +43,9 @@ class MyJsonObjectWriterTest {
         ClassWithObject obj = new ClassWithObject(2222, new PrimitiveClass(999, "str"));
 
         String json = myJsonObjectWriter.toJson(obj);
-        System.out.println("json: " + json);
 
         ClassWithObject obj2 = gson.fromJson(json, ClassWithObject.class);
-        Assertions.assertEquals(obj, obj2);
+        assertEquals(obj, obj2);
     }
 
     @Test
@@ -63,15 +65,14 @@ class MyJsonObjectWriterTest {
 
         String json = myJsonObjectWriter.toJson(obj);
 
-        System.out.println(json);
         var obj2 = gson.fromJson(json, ClassWithCollections.class);
 
-        Assertions.assertArrayEquals(obj.getArray(), obj2.getArray());
-        Assertions.assertArrayEquals(obj.getArrayTwo(), obj2.getArrayTwo());
-        Assertions.assertEquals(obj.getList(), obj2.getList());
-        Assertions.assertEquals(obj.getMap(), obj2.getMap());
-        Assertions.assertEquals(obj.getIntMap(), obj2.getIntMap());
-        Assertions.assertEquals(obj.getSet(), obj2.getSet());
+        assertArrayEquals(obj.getArray(), obj2.getArray());
+        assertArrayEquals(obj.getArrayTwo(), obj2.getArrayTwo());
+        assertEquals(obj.getList(), obj2.getList());
+        assertEquals(obj.getMap(), obj2.getMap());
+        assertEquals(obj.getIntMap(), obj2.getIntMap());
+        assertEquals(obj.getSet(), obj2.getSet());
     }
 
     @Test
@@ -106,12 +107,12 @@ class MyJsonObjectWriterTest {
 
         var obj2 = gson.fromJson(json, ClassWithCollections.class);
 
-        Assertions.assertArrayEquals(obj.getArray(), obj2.getArray());
-        Assertions.assertArrayEquals(obj.getArrayTwo(), obj2.getArrayTwo());
-        Assertions.assertEquals(obj.getList(), obj2.getList());
-        Assertions.assertEquals(obj.getMap(), obj2.getMap());
-        Assertions.assertEquals(obj.getIntMap(), obj2.getIntMap());
-        Assertions.assertEquals(obj.getSet(), obj2.getSet());
+        assertArrayEquals(obj.getArray(), obj2.getArray());
+        assertArrayEquals(obj.getArrayTwo(), obj2.getArrayTwo());
+        assertEquals(obj.getList(), obj2.getList());
+        assertEquals(obj.getMap(), obj2.getMap());
+        assertEquals(obj.getIntMap(), obj2.getIntMap());
+        assertEquals(obj.getSet(), obj2.getSet());
 
     }
 
@@ -136,8 +137,25 @@ class MyJsonObjectWriterTest {
 
         var obj2 = gson.fromJson(json, ClassWithComplexCollections.class);
 
-        Assertions.assertArrayEquals(obj.getPrimitiveClasses(), obj2.getPrimitiveClasses());
-        Assertions.assertEquals(obj.getPrimitiveClassList(), obj2.getPrimitiveClassList());
-        Assertions.assertEquals(obj.getPrimitiveClassMap(), obj2.getPrimitiveClassMap());
+        assertArrayEquals(obj.getPrimitiveClasses(), obj2.getPrimitiveClasses());
+        assertEquals(obj.getPrimitiveClassList(), obj2.getPrimitiveClassList());
+        assertEquals(obj.getPrimitiveClassMap(), obj2.getPrimitiveClassMap());
+    }
+
+    @Test
+    void nonObjectTests() {
+        assertEquals(gson.toJson(null), myJsonObjectWriter.toJson(null));
+        assertEquals(gson.toJson((byte) 1), myJsonObjectWriter.toJson((byte) 1));
+        assertEquals(gson.toJson((short) 1f), myJsonObjectWriter.toJson((short) 1f));
+        assertEquals(gson.toJson(1), myJsonObjectWriter.toJson(1));
+        assertEquals(gson.toJson(1L), myJsonObjectWriter.toJson(1L));
+        assertEquals(gson.toJson(1f), myJsonObjectWriter.toJson(1f));
+        assertEquals(gson.toJson(1d), myJsonObjectWriter.toJson(1d));
+        assertEquals(gson.toJson("aaa"), myJsonObjectWriter.toJson("aaa"));
+        assertEquals(gson.toJson('a'), myJsonObjectWriter.toJson('a'));
+        assertEquals(gson.toJson(new int[]{1, 2, 3}), myJsonObjectWriter.toJson(new int[]{1, 2, 3}));
+        assertEquals(gson.toJson(List.of(1, 2, 3)), myJsonObjectWriter.toJson(List.of(1, 2, 3)));
+        assertEquals(gson.toJson(Collections.singletonList(1)),
+                myJsonObjectWriter.toJson(Collections.singletonList(1)));
     }
 }

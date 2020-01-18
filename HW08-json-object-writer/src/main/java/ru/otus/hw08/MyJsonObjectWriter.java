@@ -1,16 +1,13 @@
 package ru.otus.hw08;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 
@@ -18,27 +15,22 @@ public class MyJsonObjectWriter implements JsonObjectWriter {
 
     @Override
     public String toJson(Object object) {
+        return object == null
+                ? JsonValue.NULL.toString()
+                : this.toJsonInternal(object);
+    }
 
-        JsonObjectBuilder builder = Json.createObjectBuilder();
-
+    private String toJsonInternal(Object object) {
         try {
-            builder.addAll(goDeeper(object));
+            return getJsonValue(object).toString();
         } catch (IllegalAccessException | IllegalArgumentException e) {
             throw new RuntimeException("ЭКСЕПТИОН!, " + e.getMessage(), e);
         }
-
-        JsonObject json = builder.build();
-        return json.toString();
     }
 
-    private JsonObjectBuilder goDeeper(Object object) throws IllegalAccessException {
-        if (object == null) {
-            return null;
-        }
-
+    private JsonObjectBuilder goDeeper(Object object, Class<?> clazz) throws IllegalAccessException {
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
-        Class<?> clazz = object.getClass();
         Field[] fields = clazz.getDeclaredFields();
 
         for (Field field : fields) {
@@ -49,11 +41,13 @@ public class MyJsonObjectWriter implements JsonObjectWriter {
             }
 
             Object fieldValue;
+            if (Modifier.isStatic(field.getModifiers())) {
+                fieldValue = object;
+            } else {
+                fieldValue = field.get(object);
+            }
 
-            fieldValue = field.get(object);
-            Class<?> fieldType = field.getType();
-
-            builder.add(field.getName(), getJsonValue(fieldType, fieldValue));
+            builder.add(field.getName(), getJsonValue(fieldValue));
             if (needToTurnOffAccessible) {
                 field.setAccessible(false);
             }
@@ -61,11 +55,12 @@ public class MyJsonObjectWriter implements JsonObjectWriter {
         return builder;
     }
 
-    private JsonValue getJsonValue(Class<?> type, Object value) throws IllegalAccessException {
-
+    private JsonValue getJsonValue(Object value) throws IllegalAccessException {
         if (value == null) {
             return JsonValue.NULL;
         }
+
+        var type = value.getClass();
 
         // а также другие примитивные и не очень типы
         if (type.equals(int.class) || type.equals(Integer.class)) {
@@ -74,8 +69,20 @@ public class MyJsonObjectWriter implements JsonObjectWriter {
         } else if (type.equals(Double.class) || type.equals(double.class)) {
             return Json.createValue((double) value);
 
+        } else if (type.equals(Float.class) || type.equals(float.class)) {
+            return Json.createValue((float) value);
+
         } else if (type.equals(Long.class) || type.equals(long.class)) {
             return Json.createValue((long) value);
+
+        } else if (type.equals(Short.class) || type.equals(short.class)) {
+            return Json.createValue((short) value);
+
+        } else if (type.equals(Byte.class) || type.equals(byte.class)) {
+            return Json.createValue((byte) value);
+
+        } else if (type.equals(Character.class) || type.equals(char.class)) {
+            return Json.createValue(String.valueOf(value));
 
         } else if (type.equals(Boolean.class) || type.equals(boolean.class)) {
             return (boolean) value ? JsonValue.TRUE : JsonValue.FALSE;
@@ -83,14 +90,15 @@ public class MyJsonObjectWriter implements JsonObjectWriter {
         } else if (type.equals(String.class)) {
             return Json.createValue((String) value);
 
+            // Далее более сложные типы
         } else if (type.isArray() || value instanceof Collection) {
             return goDeeperToCollections(value).build();
 
         } else if (value instanceof Map) {
             return goDeeperToMap((Map) value).build();
         } else {
-            // В остальных случаях считаем что это вложенный обхект и его надо бы раскопать!
-            return goDeeper(value).build();
+            // В остальных случаях считаем что это вложенный объект и его надо бы раскопать!
+            return goDeeper(value, type).build();
         }
     }
 
@@ -121,13 +129,8 @@ public class MyJsonObjectWriter implements JsonObjectWriter {
             return builder;
         }
 
-        // Можем словить проблемы, если в Map храним разнотипные данные
-        // (например, храним под Object, но getClass даст точный тип).
-        // Считаем, что так не умеем
-        var elsClass = (Class<?>) getClassForObjectStream(map.values().stream()).orElse(null);
-
         for (var key : map.keySet()) {
-            builder.add(key.toString(), getJsonValue(elsClass, map.get(key)));
+            builder.add(key.toString(), getJsonValue(map.get(key)));
         }
 
         return builder;
@@ -135,7 +138,6 @@ public class MyJsonObjectWriter implements JsonObjectWriter {
 
     private JsonArrayBuilder goDeeperToCollections(Object iterable) throws IllegalAccessException {
         JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
-        //Складываю в list для упрощения, хотя можно было бы и пользоваться iterator'ами
 
         var array = anyToArray(iterable);
 
@@ -143,19 +145,10 @@ public class MyJsonObjectWriter implements JsonObjectWriter {
             return arrayBuilder;
         }
 
-        // Можем словить проблемы, если в массиве храним разнотипные данные
-        // (например, храним под Object, но getClass даст точный тип).
-        // Считаем, что так не умеем
-        Class<?> elsClass = getClassForObjectStream(Arrays.stream(array)).orElse(null);
-
         for (var el : array) {
-            arrayBuilder.add(getJsonValue(elsClass, el));
+            arrayBuilder.add(getJsonValue(el));
         }
 
         return arrayBuilder;
-    }
-
-    private Optional<Class<?>> getClassForObjectStream(Stream<Object> stream) {
-        return stream.filter(Objects::nonNull).findAny().map(Object::getClass);
     }
 }
