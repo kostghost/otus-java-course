@@ -11,4 +11,10 @@ public interface Atm {
     void addMoney(Bundle bundle);
 
     void withdrawMoney(int value, Currency currency);
+
+    Bundle getBalanceAsBundle();
+
+    Object copy();
+
+    String getId();
 }
