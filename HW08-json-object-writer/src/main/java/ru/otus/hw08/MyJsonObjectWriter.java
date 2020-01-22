@@ -1,8 +1,8 @@
 package ru.otus.hw08;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -102,24 +102,14 @@ public class MyJsonObjectWriter implements JsonObjectWriter {
         }
     }
 
-    private Object[] anyToArray(Object iterable) {
-        Object[] array = null;
+    private Object anyToArray(Object iterable) {
 
         if (iterable.getClass().isArray()) {
-            if (iterable instanceof int[]) {
-                array = Arrays.stream((int[]) iterable).boxed().toArray();
-            } else if (iterable instanceof double[]) {
-                array = Arrays.stream((double[]) iterable).boxed().toArray();
-            } else if (iterable instanceof long[]) {
-                array = Arrays.stream((long[]) iterable).boxed().toArray();
-            } // И другие
-            else if (iterable instanceof Object[]) {
-                array = (Object[]) iterable;
-            }
+            return iterable;
         } else if (iterable instanceof Iterable) {
-            array = ((Collection) iterable).toArray();
+            return ((Collection) iterable).toArray();
         }
-        return array;
+        throw new IllegalArgumentException();
     }
 
     private JsonObjectBuilder goDeeperToMap(Map map) throws IllegalAccessException {
@@ -145,8 +135,8 @@ public class MyJsonObjectWriter implements JsonObjectWriter {
             return arrayBuilder;
         }
 
-        for (var el : array) {
-            arrayBuilder.add(getJsonValue(el));
+        for (int i = 0; i < Array.getLength(array); i++) {
+            arrayBuilder.add(getJsonValue(Array.get(array, i)));
         }
 
         return arrayBuilder;
