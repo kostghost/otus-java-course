@@ -38,6 +38,7 @@
         <module>HW-05-test-framework</module>
         <module>HW06-atm-emulator</module>
         <module>HW07-atm-department</module>
+        <module>HW08-json-object-writer</module>
         <module>HW-09-orm</module>
     </modules>
 
