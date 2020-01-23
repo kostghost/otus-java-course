@@ -1,5 +1,7 @@
 package ru.otus.api.model;
 
+import java.util.Objects;
+
 import ru.otus.api.annotations.Id;
 
 /**
@@ -38,5 +40,24 @@ public class User implements HasIdModel {
                 ", name='" + name + '\'' +
                 ", age=" + age +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof User)) {
+            return false;
+        }
+        User user = (User) o;
+        return id == user.id &&
+                age == user.age &&
+                Objects.equals(name, user.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, age);
     }
 }

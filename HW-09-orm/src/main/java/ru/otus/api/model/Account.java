@@ -1,6 +1,7 @@
 package ru.otus.api.model;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import ru.otus.api.annotations.Id;
 
@@ -37,5 +38,24 @@ public class Account implements HasIdModel {
                 ", type='" + type + '\'' +
                 ", rest=" + rest +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Account)) {
+            return false;
+        }
+        Account account = (Account) o;
+        return no == account.no &&
+                Objects.equals(type, account.type) &&
+                Objects.equals(rest, account.rest);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(no, type, rest);
     }
 }
