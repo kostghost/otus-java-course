@@ -1,5 +1,6 @@
 package ru.otus.reflection;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -48,4 +49,19 @@ class ObjectMapperImplTest {
 
         assertEquals("User", name);
     }
+
+    @Test
+    void generateObject() {
+        var oldUser = new User(9, "Vasyan Pupokin", 42);
+
+        var map = new HashMap<String, Object>();
+        map.put("id", 9L);
+        map.put("name", "Vasyan Pupokin");
+        map.put("age", 42);
+
+        var generatedUser = objectMapper.generateObject(User.class, map);
+
+        assertEquals(oldUser, generatedUser);
+    }
+
 }

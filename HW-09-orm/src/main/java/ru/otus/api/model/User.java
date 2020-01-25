@@ -15,6 +15,11 @@ public class User implements HasIdModel {
     private final String name;
     private final int age;
 
+    // Хак для упрощения создания инстанса
+    public User() {
+        this(0L, null, 0);
+    }
+
     public User(long id, String name, int age) {
         this.id = id;
         this.name = name;
