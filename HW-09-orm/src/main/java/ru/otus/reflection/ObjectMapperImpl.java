@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -38,9 +39,10 @@ public class ObjectMapperImpl implements ObjectMapper {
                 .collect(Collectors.toList());
     }
 
+
     @Override
-    public List<String> getFieldNamesWithAnnotaion(Object object, Class<?> annotationClass) {
-        var fields = getFields(object.getClass());
+    public List<String> getFieldNamesWithAnnotaion(Class<?> clazz, Class<?> annotationClass) {
+        var fields = getFields(clazz);
 
         return fields.stream()
                 .filter(field -> isFieldHasAnnotation(field, annotationClass))
@@ -94,25 +96,37 @@ public class ObjectMapperImpl implements ObjectMapper {
     @Override
     public <T> T generateObject(Class<T> clazz, Map<String, Object> fields) {
         T result = null;
+
+        // Имеем проблемы с разным кейсом букв. Поэтому - хак
+        // Можно его, конечно, обойти
+        Map<String, Object> nonCaseSensitiveMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        nonCaseSensitiveMap.putAll(fields);
+
         try {
             // deprecated, использует конструктор по умолчанию, которого может не быть, но
             // иначе придется возиться с getConstructors много и долго :)
             result = clazz.newInstance();
 
-            for (var key : fields.keySet()) {
-                var declaredField = clazz.getDeclaredField(key);
+            var declaredFields = clazz.getDeclaredFields();
 
-                boolean accessible = declaredField.isAccessible();
-                declaredField.setAccessible(true);
 
-                declaredField.set(result, fields.get(key));
+            for (var field : declaredFields) {
+                var name = field.getName().toLowerCase();
+                var value = nonCaseSensitiveMap.get(name);
 
-                declaredField.setAccessible(accessible);
+                boolean accessible = field.isAccessible();
+                field.setAccessible(true);
+
+                field.set(result, value);
+
+                field.setAccessible(accessible);
+
             }
-        } catch (InstantiationException | IllegalAccessException | NoSuchFieldException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
         return result;
     }
+
 
 }

@@ -67,7 +67,8 @@ public class HasIdJdbcTemplate<T extends HasIdModel> implements JdbcTemplate<T> 
 
             var fields = objectMapper.getObjectFieldMap(objectData);
             // todo добавить exception
-            var keyName = objectMapper.getFieldNamesWithAnnotaion(objectData, Id.class).get(0);
+            var keyName = objectMapper.getFieldNamesWithAnnotaion(objectData.getClass(), Id.class)
+                    .get(0);
 
             String queryTemplate = sqlTemplateGenerator.update(tableName,
                     getColsForUpdate(fields, keyName),
@@ -104,20 +105,37 @@ public class HasIdJdbcTemplate<T extends HasIdModel> implements JdbcTemplate<T> 
 
     @Override
     public T load(long id, Class<T> clazz) {
-//        sessionManager.beginSession();
-//        try {
-//            DatabaseSessionJdbc session = (DatabaseSessionJdbc) sessionManager.getCurrentSession();
-//
-//            String tableName = objectMapper.getObjectClassName(clazz);
-//
-//            var sql = sqlTemplateGenerator.select(tableName, )
-//
-//            dbExecutor.selectRecord(session.getConnection(), )
-//
-//            sessionManager.commitSession();
-//        } catch (SQLException e) {
-//            sessionManager.rollbackSession();
-//        }
+        sessionManager.beginSession();
+        try {
+            DatabaseSessionJdbc session = (DatabaseSessionJdbc) sessionManager.getCurrentSession();
+
+            String tableName = objectMapper.getObjectClassName(clazz);
+            var fieldNames = objectMapper.getFieldNames(clazz);
+            var keyName = objectMapper.getFieldNamesWithAnnotaion(clazz, Id.class)
+                    .get(0);
+
+            var sql = sqlTemplateGenerator.select(tableName, fieldNames, keyName);
+
+            var result = dbExecutor.selectRecord(session.getConnection(), sql, id,
+                    resultSet -> {
+                        try {
+                            return objectMapper.generateObject(clazz, JdbcTypesHelper.mapRowToJavaTypes(resultSet));
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    }
+            );
+            sessionManager.commitSession();
+
+            if (result.isEmpty()) {
+                throw new RuntimeException("exception TODO");
+            }
+            return result.get();
+
+        } catch (SQLException e) {
+            sessionManager.rollbackSession();
+        }
         return null;
     }
 
