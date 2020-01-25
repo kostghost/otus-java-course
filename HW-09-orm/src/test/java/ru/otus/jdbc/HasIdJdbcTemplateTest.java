@@ -20,7 +20,7 @@ import ru.otus.reflection.ObjectMapperImpl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class HasIdJdbcTeamplateTest {
+class HasIdJdbcTemplateTest {
     private static final String CREATE_USER_TABLE_SQL = "" +
             "create table user(" +
             "   id bigint(20) not null auto_increment, " +
@@ -51,7 +51,7 @@ class HasIdJdbcTeamplateTest {
 
     @Test
     void create() throws SQLException {
-        var userJdbcTemlate = new HasIdJdbcTeamplate<User>(sessionManager, dbExecutor, objectMapper,
+        var userJdbcTemlate = new HasIdJdbcTemplate<User>(sessionManager, dbExecutor, objectMapper,
                 sqlTemplateGenerator);
         var originalPupokin = new User(9, "Вася Пупокин", 42);
 
@@ -61,7 +61,7 @@ class HasIdJdbcTeamplateTest {
 
     @Test
     void update() throws SQLException {
-        var accountJdbcTemplate = new HasIdJdbcTeamplate<Account>(sessionManager, dbExecutor, objectMapper,
+        var accountJdbcTemplate = new HasIdJdbcTemplate<Account>(sessionManager, dbExecutor, objectMapper,
                 sqlTemplateGenerator);
 
         var originalAccount = new Account(238, "INCOMING", BigDecimal.valueOf(2.38));
@@ -79,7 +79,7 @@ class HasIdJdbcTeamplateTest {
 
     @Test
     void load() {
-        var userJdbcTemlate = new HasIdJdbcTeamplate<User>(sessionManager, dbExecutor, objectMapper,
+        var userJdbcTemlate = new HasIdJdbcTemplate<User>(sessionManager, dbExecutor, objectMapper,
                 sqlTemplateGenerator);
         var originalPupokin = new User(9, "Вася Пупокин", 42);
 

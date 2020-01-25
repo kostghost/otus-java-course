@@ -15,18 +15,18 @@ import ru.otus.api.sessionmanager.SessionManager;
 import ru.otus.jdbc.sessionmanager.DatabaseSessionJdbc;
 import ru.otus.reflection.ObjectMapper;
 
-public class HasIdJdbcTeamplate<T extends HasIdModel> implements JdbcTemplate<T> {
+public class HasIdJdbcTemplate<T extends HasIdModel> implements JdbcTemplate<T> {
 
-    private static final Logger logger = LoggerFactory.getLogger(HasIdJdbcTeamplate.class);
+    private static final Logger logger = LoggerFactory.getLogger(HasIdJdbcTemplate.class);
     private final SessionManager sessionManager;
-    private final DbExecutor dbExecutor;
+    private final DbExecutor<T> dbExecutor;
     private final ObjectMapper objectMapper;
     private final SqlTemplateGenerator sqlTemplateGenerator;
 
-    public HasIdJdbcTeamplate(SessionManager sessionManager,
-                              DbExecutor dbExecutor,
-                              ObjectMapper objectMapper,
-                              SqlTemplateGenerator sqlTemplateGenerator) {
+    public HasIdJdbcTemplate(SessionManager sessionManager,
+                             DbExecutor<T> dbExecutor,
+                             ObjectMapper objectMapper,
+                             SqlTemplateGenerator sqlTemplateGenerator) {
         this.sessionManager = sessionManager;
         this.dbExecutor = dbExecutor;
         this.objectMapper = objectMapper;
@@ -41,7 +41,7 @@ public class HasIdJdbcTeamplate<T extends HasIdModel> implements JdbcTemplate<T>
         try {
             DatabaseSessionJdbc session = (DatabaseSessionJdbc) sessionManager.getCurrentSession();
 
-            String tableName = objectMapper.getObjectClassName(objectData);
+            String tableName = objectMapper.getObjectClassName(objectData.getClass());
             var fields = objectMapper.getObjectFieldMap(objectData);
             var fieldNames = new ArrayList<>(fields.keySet());
             var fieldValues = fields.values().stream()
@@ -63,7 +63,7 @@ public class HasIdJdbcTeamplate<T extends HasIdModel> implements JdbcTemplate<T>
         try {
             DatabaseSessionJdbc session = (DatabaseSessionJdbc) sessionManager.getCurrentSession();
 
-            String tableName = objectMapper.getObjectClassName(objectData);
+            String tableName = objectMapper.getObjectClassName(objectData.getClass());
 
             var fields = objectMapper.getObjectFieldMap(objectData);
             // todo добавить exception
@@ -107,6 +107,10 @@ public class HasIdJdbcTeamplate<T extends HasIdModel> implements JdbcTemplate<T>
 //        sessionManager.beginSession();
 //        try {
 //            DatabaseSessionJdbc session = (DatabaseSessionJdbc) sessionManager.getCurrentSession();
+//
+//            String tableName = objectMapper.getObjectClassName(clazz);
+//
+//            var sql = sqlTemplateGenerator.select(tableName, )
 //
 //            dbExecutor.selectRecord(session.getConnection(), )
 //

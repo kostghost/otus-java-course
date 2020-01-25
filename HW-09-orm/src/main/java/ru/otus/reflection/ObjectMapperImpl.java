@@ -12,17 +12,17 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.otus.jdbc.HasIdJdbcTeamplate;
+import ru.otus.jdbc.HasIdJdbcTemplate;
 
 public class ObjectMapperImpl implements ObjectMapper {
 
-    private static final Logger logger = LoggerFactory.getLogger(HasIdJdbcTeamplate.class);
+    private static final Logger logger = LoggerFactory.getLogger(HasIdJdbcTemplate.class);
 
     @Override
     public LinkedHashMap<String, Object> getObjectFieldMap(Object object) {
         var result = new LinkedHashMap<String, Object>();
 
-        getFields(object).forEach(
+        getFields(object.getClass()).forEach(
                 field -> getValue(field, object).map(
                         value -> result.put(field.getName(), value)
                 )
@@ -32,8 +32,15 @@ public class ObjectMapperImpl implements ObjectMapper {
     }
 
     @Override
+    public List<String> getFieldNames(Class<?> clazz) {
+        return getFields(clazz).stream()
+                .map(Field::getName)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<String> getFieldNamesWithAnnotaion(Object object, Class<?> annotationClass) {
-        var fields = getFields(object);
+        var fields = getFields(object.getClass());
 
         return fields.stream()
                 .filter(field -> isFieldHasAnnotation(field, annotationClass))
@@ -42,8 +49,8 @@ public class ObjectMapperImpl implements ObjectMapper {
     }
 
     @Override
-    public String getObjectClassName(Object object) {
-        return object.getClass().getSimpleName();
+    public String getObjectClassName(Class<?> clazz) {
+        return clazz.getSimpleName();
     }
 
     private boolean isFieldHasAnnotation(Field field, Class<?> annotationClass) {
@@ -52,8 +59,7 @@ public class ObjectMapperImpl implements ObjectMapper {
     }
 
     // Можно кэшировать результат работы этого метода
-    private List<Field> getFields(Object object) {
-        var clazz = object.getClass();
+    private List<Field> getFields(Class<?> clazz) {
 
         return Arrays
                 .stream(clazz.getDeclaredFields())
