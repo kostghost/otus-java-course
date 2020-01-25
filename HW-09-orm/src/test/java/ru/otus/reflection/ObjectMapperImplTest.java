@@ -45,7 +45,7 @@ class ObjectMapperImplTest {
 
     @Test
     void getObjectClassName() {
-        String name = objectMapper.getObjectClassName(new User(9, "", 0));
+        String name = objectMapper.getObjectClassName(User.class);
 
         assertEquals("User", name);
     }
