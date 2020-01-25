@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -83,4 +84,29 @@ public class ObjectMapperImpl implements ObjectMapper {
 
         return result;
     }
+
+    @Override
+    public <T> T generateObject(Class<T> clazz, Map<String, Object> fields) {
+        T result = null;
+        try {
+            // deprecated, использует конструктор по умолчанию, которого может не быть, но
+            // иначе придется возиться с getConstructors много и долго :)
+            result = clazz.newInstance();
+
+            for (var key : fields.keySet()) {
+                var declaredField = clazz.getDeclaredField(key);
+
+                boolean accessible = declaredField.isAccessible();
+                declaredField.setAccessible(true);
+
+                declaredField.set(result, fields.get(key));
+
+                declaredField.setAccessible(accessible);
+            }
+        } catch (InstantiationException | IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
 }

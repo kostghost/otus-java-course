@@ -102,9 +102,20 @@ public class HasIdJdbcTeamplate<T extends HasIdModel> implements JdbcTemplate<T>
         return values;
     }
 
-
     @Override
     public T load(long id, Class<T> clazz) {
+//        sessionManager.beginSession();
+//        try {
+//            DatabaseSessionJdbc session = (DatabaseSessionJdbc) sessionManager.getCurrentSession();
+//
+//            dbExecutor.selectRecord(session.getConnection(), )
+//
+//            sessionManager.commitSession();
+//        } catch (SQLException e) {
+//            sessionManager.rollbackSession();
+//        }
         return null;
     }
+
+
 }

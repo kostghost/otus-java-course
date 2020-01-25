@@ -12,6 +12,11 @@ public class Account implements HasIdModel {
     private final String type;
     private final BigDecimal rest;
 
+    // Хак для упрощения создания инстанса
+    public Account() {
+        this(0L, null, null);
+    }
+
     public Account(long no, String type, BigDecimal rest) {
         this.no = no;
         this.type = type;

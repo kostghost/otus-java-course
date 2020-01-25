@@ -78,7 +78,7 @@ class HasIdJdbcTeamplateTest {
     }
 
     @Test
-    void justTest() {
+    void load() {
         var userJdbcTemlate = new HasIdJdbcTeamplate<User>(sessionManager, dbExecutor, objectMapper,
                 sqlTemplateGenerator);
         var originalPupokin = new User(9, "Вася Пупокин", 42);
