@@ -1,11 +1,15 @@
 package ru.otus.jdbc;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.otus.api.annotations.Id;
 import ru.otus.api.model.HasIdModel;
 import ru.otus.api.sessionmanager.SessionManager;
 import ru.otus.jdbc.sessionmanager.DatabaseSessionJdbc;
@@ -17,17 +21,16 @@ public class HasIdJdbcTeamplate<T extends HasIdModel> implements JdbcTemplate<T>
     private final SessionManager sessionManager;
     private final DbExecutor dbExecutor;
     private final ObjectMapper objectMapper;
-    private final String testCreate = "insert into user (id, name, age) values (? ,?, ?)";
-    private final String testUpdate = "update user set name = ?, age = ? where id = 5";
-    private final String testSelect = "select id, name, age from user where id = ?";
-    private Map<String, Object> objectMap;
+    private final SqlTemplateGenerator sqlTemplateGenerator;
 
     public HasIdJdbcTeamplate(SessionManager sessionManager,
                               DbExecutor dbExecutor,
-                              ObjectMapper objectMapper) {
+                              ObjectMapper objectMapper,
+                              SqlTemplateGenerator sqlTemplateGenerator) {
         this.sessionManager = sessionManager;
         this.dbExecutor = dbExecutor;
         this.objectMapper = objectMapper;
+        this.sqlTemplateGenerator = sqlTemplateGenerator;
     }
 
     @Override
@@ -37,7 +40,17 @@ public class HasIdJdbcTeamplate<T extends HasIdModel> implements JdbcTemplate<T>
         sessionManager.beginSession();
         try {
             DatabaseSessionJdbc session = (DatabaseSessionJdbc) sessionManager.getCurrentSession();
-            dbExecutor.updateOrInsertRecord(session.getConnection(), testCreate, List.of("5", "kostyan", "25"));
+
+            String tableName = objectMapper.getObjectClassName(objectData);
+            var fields = objectMapper.getObjectFieldMap(objectData);
+            var fieldNames = new ArrayList<>(fields.keySet());
+            var fieldValues = fields.values().stream()
+                    .map(Object::toString)
+                    .collect(Collectors.toList());
+            var queryTemplate = sqlTemplateGenerator.insert(tableName, fieldNames);
+
+            dbExecutor.updateOrInsertRecord(session.getConnection(), queryTemplate, fieldValues);
+
             sessionManager.commitSession();
         } catch (SQLException e) {
             sessionManager.rollbackSession();
@@ -49,26 +62,49 @@ public class HasIdJdbcTeamplate<T extends HasIdModel> implements JdbcTemplate<T>
         sessionManager.beginSession();
         try {
             DatabaseSessionJdbc session = (DatabaseSessionJdbc) sessionManager.getCurrentSession();
-            dbExecutor.updateOrInsertRecord(session.getConnection(), testUpdate, List.of("new Kostyan", "20"));
+
+            String tableName = objectMapper.getObjectClassName(objectData);
+
+            var fields = objectMapper.getObjectFieldMap(objectData);
+            // todo добавить exception
+            var keyName = objectMapper.getFieldNamesWithAnnotaion(objectData, Id.class).get(0);
+
+            String queryTemplate = sqlTemplateGenerator.update(tableName,
+                    getColsForUpdate(fields, keyName),
+                    keyName);
+
+            dbExecutor.updateOrInsertRecord(session.getConnection(),
+                    queryTemplate,
+                    getParamsForUpdate(fields, keyName));
+
             sessionManager.commitSession();
         } catch (SQLException e) {
             sessionManager.rollbackSession();
         }
     }
+
+    // Удаляем ключ т.к. его не должно быть в запросе
+    private List<String> getColsForUpdate(LinkedHashMap<String, Object> fields, String keyName) {
+        return fields.keySet().stream()
+                .filter(key -> !key.equalsIgnoreCase(keyName))
+                .collect(Collectors.toList());
+    }
+
+    // Перемещаем значение ключа в конец т.к. он вставляется в последний ? после where
+    private List<String> getParamsForUpdate(LinkedHashMap<String, Object> fields, String keyName) {
+        var keyValue = fields.get(keyName);
+        var values = fields.keySet().stream()
+                .filter(key -> !key.equalsIgnoreCase(keyName))
+                .map(key -> fields.get(key).toString())
+                .collect(Collectors.toList());
+        values.add(keyValue.toString());
+
+        return values;
+    }
+
 
     @Override
     public T load(long id, Class<T> clazz) {
         return null;
-    }
-
-    private void insert(String query, List<Object> values) {
-        sessionManager.beginSession();
-        try {
-            DatabaseSessionJdbc session = (DatabaseSessionJdbc) sessionManager.getCurrentSession();
-            dbExecutor.updateOrInsertRecord(session.getConnection(), query, values);
-            sessionManager.commitSession();
-        } catch (SQLException e) {
-            sessionManager.rollbackSession();
-        }
     }
 }

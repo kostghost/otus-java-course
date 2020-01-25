@@ -1,5 +1,6 @@
 package ru.otus.jdbc;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.otus.api.h2.DataSourceH2;
+import ru.otus.api.model.Account;
 import ru.otus.api.model.User;
 import ru.otus.api.sessionmanager.SessionManager;
 import ru.otus.jdbc.sessionmanager.SessionManagerJdbc;
@@ -33,6 +35,7 @@ class HasIdJdbcTeamplateTest {
     private DbExecutor dbExecutor;
     private DataSource dataSource;
     private ObjectMapper objectMapper;
+    private SqlTemplateGenerator sqlTemplateGenerator;
 
     @BeforeEach
     void init() throws Exception {
@@ -40,6 +43,7 @@ class HasIdJdbcTeamplateTest {
         this.sessionManager = new SessionManagerJdbc(dataSource);
         this.dbExecutor = new DbExecutor();
         this.objectMapper = new ObjectMapperImpl();
+        this.sqlTemplateGenerator = new SqlTemplateGeneratorImpl();
 
         createTable(dataSource, CREATE_ACCOUNT_TABLE_SQL);
         createTable(dataSource, CREATE_USER_TABLE_SQL);
@@ -47,17 +51,36 @@ class HasIdJdbcTeamplateTest {
 
     @Test
     void create() throws SQLException {
-        var userJdbcTemlate = new HasIdJdbcTeamplate<User>(sessionManager, dbExecutor, objectMapper);
+        var userJdbcTemlate = new HasIdJdbcTeamplate<User>(sessionManager, dbExecutor, objectMapper,
+                sqlTemplateGenerator);
         var originalPupokin = new User(9, "Вася Пупокин", 42);
 
         userJdbcTemlate.create(originalPupokin);
-        userJdbcTemlate.update(originalPupokin);
         assertEquals("Вася Пупокин", selectFirstUserName(dataSource));
     }
 
     @Test
+    void update() throws SQLException {
+        var accountJdbcTemplate = new HasIdJdbcTeamplate<Account>(sessionManager, dbExecutor, objectMapper,
+                sqlTemplateGenerator);
+
+        var originalAccount = new Account(238, "INCOMING", BigDecimal.valueOf(2.38));
+
+        //по-хорошему, неплохо бы заменить create на прямой вызов sql
+        accountJdbcTemplate.create(originalAccount);
+        assertEquals("INCOMING", selectAccountType(dataSource, 238));
+
+        var updatedAccount = new Account(238, "BIG BANG", BigDecimal.valueOf(2.55));
+        accountJdbcTemplate.update(updatedAccount);
+
+        assertEquals("BIG BANG", selectAccountType(dataSource, 238));
+
+    }
+
+    @Test
     void justTest() {
-        var userJdbcTemlate = new HasIdJdbcTeamplate<User>(sessionManager, dbExecutor, objectMapper);
+        var userJdbcTemlate = new HasIdJdbcTeamplate<User>(sessionManager, dbExecutor, objectMapper,
+                sqlTemplateGenerator);
         var originalPupokin = new User(9, "Вася Пупокин", 42);
 
         userJdbcTemlate.create(originalPupokin);
@@ -80,7 +103,15 @@ class HasIdJdbcTeamplateTest {
             var rows = pst.executeQuery();
             rows.next();
             return rows.getString("name");
+        }
+    }
 
+    private String selectAccountType(DataSource dataSource, int no) throws SQLException {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement pst = connection.prepareStatement("select * from account where no = " + no)) {
+            var rows = pst.executeQuery();
+            rows.next();
+            return rows.getString("type");
         }
     }
 
