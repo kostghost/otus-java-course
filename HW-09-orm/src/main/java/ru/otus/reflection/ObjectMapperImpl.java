@@ -4,9 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -19,8 +18,8 @@ public class ObjectMapperImpl implements ObjectMapper {
     private static final Logger logger = LoggerFactory.getLogger(HasIdJdbcTeamplate.class);
 
     @Override
-    public Map<String, Object> getObjectFieldMap(Object object) {
-        var result = new HashMap<String, Object>();
+    public LinkedHashMap<String, Object> getObjectFieldMap(Object object) {
+        var result = new LinkedHashMap<String, Object>();
 
         getFields(object).forEach(
                 field -> getValue(field, object).map(

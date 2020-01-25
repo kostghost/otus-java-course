@@ -19,8 +19,9 @@ import org.slf4j.LoggerFactory;
  */
 public class DbExecutor<T> {
     private static Logger logger = LoggerFactory.getLogger(DbExecutor.class);
+    public static final int KEY_WAS_NOT_GENERATED = -1;
 
-    public long insertRecord(Connection connection, String sql, List<String> params) throws SQLException {
+    public long updateOrInsertRecord(Connection connection, String sql, List<String> params) throws SQLException {
         Savepoint savePoint = connection.setSavepoint("savePointName");
         try (PreparedStatement pst = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             for (int idx = 0; idx < params.size(); idx++) {
@@ -28,8 +29,10 @@ public class DbExecutor<T> {
             }
             pst.executeUpdate();
             try (ResultSet rs = pst.getGeneratedKeys()) {
-                rs.next();
-                return rs.getInt(1);
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+                return KEY_WAS_NOT_GENERATED;
             }
         } catch (SQLException ex) {
             connection.rollback(savePoint);
