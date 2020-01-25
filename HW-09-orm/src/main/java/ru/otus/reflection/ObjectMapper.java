@@ -11,7 +11,7 @@ public interface ObjectMapper {
 
     List<String> getFieldNames(Class<?> clazz);
 
-    List<String> getFieldNamesWithAnnotaion(Object object, Class<?> annotationClass);
+    List<String> getFieldNamesWithAnnotaion(Class<?> clazz, Class<?> annotationClass);
 
     String getObjectClassName(Class<?> clazz);
 

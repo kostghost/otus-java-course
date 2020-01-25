@@ -38,7 +38,7 @@ class ObjectMapperImplTest {
     @Test
     void getFieldNamesWithAnnotaion() {
         var user = new User(9, "Vasyan Pupokin", 42);
-        List<String> fields = objectMapper.getFieldNamesWithAnnotaion(user, Id.class);
+        List<String> fields = objectMapper.getFieldNamesWithAnnotaion(user.getClass(), Id.class);
 
         assertIterableEquals(List.of("id"), fields);
     }
