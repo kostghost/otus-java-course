@@ -20,7 +20,7 @@ public class ObjectMapperImpl implements ObjectMapper {
     private static final Logger logger = LoggerFactory.getLogger(HasIdJdbcTemplate.class);
 
     @Override
-    public LinkedHashMap<String, Object> getObjectFieldMap(Object object) {
+    public <T> LinkedHashMap<String, Object> getObjectFieldMap(T object) {
         var result = new LinkedHashMap<String, Object>();
 
         getFields(object.getClass()).forEach(
@@ -84,10 +84,6 @@ public class ObjectMapperImpl implements ObjectMapper {
             result = Optional.ofNullable(field.get(object));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-        }
-
-        if (!isAccessible) {
-            field.setAccessible(false);
         }
 
         return result;

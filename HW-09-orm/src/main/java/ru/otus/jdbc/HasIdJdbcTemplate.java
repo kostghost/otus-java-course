@@ -66,9 +66,11 @@ public class HasIdJdbcTemplate<T extends HasIdModel> implements JdbcTemplate<T> 
             String tableName = objectMapper.getObjectClassName(objectData.getClass());
 
             var fields = objectMapper.getObjectFieldMap(objectData);
-            // todo добавить exception
-            var keyName = objectMapper.getFieldNamesWithAnnotaion(objectData.getClass(), Id.class)
-                    .get(0);
+            var keys = objectMapper.getFieldNamesWithAnnotaion(objectData.getClass(), Id.class);
+            if (keys.size() != 1){
+                throw new JdbcException("troubles");
+            }
+            var keyName = keys.get(0);
 
             String queryTemplate = sqlTemplateGenerator.update(tableName,
                     getColsForUpdate(fields, keyName),
