@@ -7,7 +7,7 @@ import java.util.Map;
 public interface ObjectMapper {
 
     // Используется LinkedHashMap чтобы хранить порядок.
-    LinkedHashMap<String, Object> getObjectFieldMap(Object object);
+    <T> LinkedHashMap<String, Object> getObjectFieldMap(T object);
 
     List<String> getFieldNames(Class<?> clazz);
 
