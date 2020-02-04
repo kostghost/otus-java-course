@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Create user</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<form accept-charset="utf-8" id="create-form" th:action="@{/admin/user/save}" th:method="post" th:object="${user}">
+    <h1>Новый пользователь:</h1>
+
+    <div class="row">
+        <label for="user-name">Name:</label>
+        <input id="user-name" name="name" required th:value="${user.name}" type="text" />
+    </div>
+
+    <div class="row">
+        <label for="user-login">Login:</label>
+        <input id="user-login" name="login" required th:value="${user.login}" type="text" />
+    </div>
+
+    <div class="row">
+        <label for="user-password">Password:</label>
+        <input id="user-password" name="password" required th:value="${user.password}" type="password" />
+    </div>
+
+
+    <div class="row">
+        <label for="user-role">Role:</label>
+        <!--  по хорошему нужно роли подкачивать -->
+        <select id="user-role" name="select" th:field="${user.role}">
+            <option th:each="role : ${T(ru.otus.hw13.domain.Role).values()}"
+                    th:text="${role}"
+                    th:value="${role}"></option>
+        </select>
+    </div>
+
+
+    <div class="row">
+        <button type="submit">Save</button>
+    </div>
+</form>
+<a th:href="@{/admin}">Админка</a>
+</body>
+</html>
