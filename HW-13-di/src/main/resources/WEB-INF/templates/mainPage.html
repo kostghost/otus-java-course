@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>HW13</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<h3>HELLO!</h3>
+
+<div>Залогинитесь, чтобы получить доступ к админке</div>
+<div>(На самом деле страницы никак не защищены и на них можно попасть по прямым ссылкам)</div>
+<br>
+<div>(подключать spring security я не стал, а самому это сделать не так просто)</div>
+<br>
+<form name="login">
+
+    <div class="row">
+        <label for="login">Name:</label>
+        <input id="login" name="login" type="text" />
+    </div>
+
+    <div class="row">
+        <label for="pass">Password:</label>
+        <input id="pass" name="pass" type="password" />
+    </div>
+    <div class="row">
+        <input onclick="check(this.form)" type="button" value="Login" />
+        <input type="reset" value="Cancel" />
+    </div>
+</form>
+
+<th:block th:layout:fragment="script">
+    <script>
+        function check(form) {
+            const login = form.login.value;
+            const password = form.pass.value;
+
+            postData('api/login', {
+                login: login,
+                password: password
+            }).then(data => {
+                if (data.accessAllowed) {
+                    window.location.replace('admin');
+                } else {
+                    if (!data.loginSuccessfull) {
+                        alert('Неправильный логин или пароль!');
+                    } else {
+                        alert('Доступ к админке запрещен!');
+                    }
+                }
+            })
+                .catch(() => alert('Произошла ошибка!'));
+        }
+
+        function postData(url = '', data = {}) {
+            return fetch(url, {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                redirect: 'follow',
+                referrer: 'no-referrer',
+                body: JSON.stringify(data),
+            })
+                .then(response => response.json());
+        }
+    </script>
+</th:block>
+
+</body>
+</html>

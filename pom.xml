@@ -40,6 +40,7 @@
         <module>HW07-atm-department</module>
         <module>HW08-json-object-writer</module>
         <module>HW-09-orm</module>
+        <module>HW-13-di</module>
     </modules>
 
     <properties>
